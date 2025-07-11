@@ -1,4 +1,4 @@
-const URL = 'https://script.google.com/macros/s/AKfycbwTRGt2r_BiG-d_YM59jcOapADtr01o1PABD4QUT-br12Kw87--BVWwi4FF1pmcPIPHCw/exec';
+const URL = 'https://script.google.com/macros/s/AKfycbxvSqJQTRK4UGku7nVwqn-UqKp_wpGy3uB0_In1kD02T2h03rfjZETyYIR9zP6PyFCdOg/exec';
 
 let ultimoNumero = 0;
 let ultimaMarca = '';
