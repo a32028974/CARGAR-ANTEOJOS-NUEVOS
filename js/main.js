@@ -4,21 +4,38 @@ let ultimoNumero = 0;
 let ultimaMarca = '';
 let ultimaFamilia = '';
 
-// 👉 Al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
   const hoy = new Date().toISOString().split('T')[0];
   document.getElementById('fecha_ingreso').value = hoy;
 
-  // Traer el último número de anteojo
+  // Buscar el primer número vacío
   fetch(URL + '?todos=true')
     .then(res => res.json())
     .then(data => {
-      const ultFila = data.slice(-1)[0];
-      ultimoNumero = parseInt(ultFila[0]) + 1 || 1;
+      let encontrado = null;
+      for (let i = 1; i < data.length; i++) {
+        const fila = data[i];
+        const numero = fila[0];
+        const marca = fila[1];
+        const modelo = fila[2];
+        const color = fila[3];
+        if (numero && !marca && !modelo && !color) {
+          encontrado = parseInt(numero);
+          break;
+        }
+      }
+
+      if (encontrado) {
+        ultimoNumero = encontrado;
+      } else {
+        const ultFila = data.at(-1);
+        ultimoNumero = parseInt(ultFila[0]) + 1 || 1;
+      }
+
       document.getElementById('n_anteojo').value = ultimoNumero;
     });
 
-  // Mostrar input de marca nueva si se elige "OTRA"
+  // Mostrar input para nueva marca
   const marcaSelect = document.getElementById('marca');
   marcaSelect.addEventListener('change', () => {
     const nuevaInput = document.getElementById('nueva_marca');
@@ -29,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Recalcular precio si cambia costo o familia
+  // Recalcular precio automáticamente
   document.getElementById('costo').addEventListener('input', calcularPrecio);
   document.getElementById('familia').addEventListener('change', calcularPrecio);
 });
@@ -50,7 +67,6 @@ function calcularPrecio() {
   document.getElementById('precio_publico').value = precio.toFixed(2);
 }
 
-// 👉 Envío del formulario
 document.getElementById('formulario').addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -87,30 +103,36 @@ document.getElementById('formulario').addEventListener('submit', async (e) => {
   };
 
   try {
-    await fetch(URL, {
+    const response = await fetch(URL, {
       method: 'POST',
       body: JSON.stringify(datos),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' }
     });
 
-    // Guardar últimos valores
-    ultimaMarca = marca;
-    ultimaFamilia = familia;
+    const result = await response.json();
 
-    // Limpiar formulario
-    document.getElementById('formulario').reset();
+    if (result.success) {
+      alert('Guardado correctamente ✅');
 
-    // Restaurar persistencias
-    document.getElementById('n_anteojo').value = ++ultimoNumero;
-    document.getElementById('marca').value = ultimaMarca;
-    document.getElementById('familia').value = ultimaFamilia;
-    document.getElementById('fecha_ingreso').value = new Date().toISOString().split('T')[0];
-    document.getElementById('nueva_marca').style.display = 'none';
+      // Guardar últimos valores
+      ultimaMarca = marca;
+      ultimaFamilia = familia;
+
+      // Limpiar todo
+      document.getElementById('formulario').reset();
+
+      // Restaurar valores por defecto
+      document.getElementById('n_anteojo').value = ++ultimoNumero;
+      document.getElementById('marca').value = ultimaMarca;
+      document.getElementById('familia').value = ultimaFamilia;
+      document.getElementById('fecha_ingreso').value = new Date().toISOString().split('T')[0];
+      document.getElementById('nueva_marca').style.display = 'none';
+    } else {
+      alert('Error al guardar. Reintentá.');
+    }
 
   } catch (err) {
-    alert('Error al guardar. Reintentá.');
+    alert('Error de conexión. Reintentá.');
     console.error(err);
   }
 });
