@@ -26,10 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (encontrado) {
         ultimoNumero = encontrado;
-      } else {
-        const ultFila = data.at(-1);
-        ultimoNumero = parseInt(ultFila[0]) + 1 || 1;
-      }
+     } else {
+  const ultima = data[data.length - 1];
+  ultimoNumero = parseInt(ultima[0]) + 1 || 1;
+}
+
 
       document.getElementById('n_anteojo').value = ultimoNumero;
     });
