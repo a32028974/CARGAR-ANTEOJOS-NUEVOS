@@ -7,9 +7,17 @@
   <script src="js/main.js" defer></script>
 </head>
 <body>
-  <h2>Registro de Anteojos V7 </h2>
+  <h2>Registro de Anteojos V8</h2>
+
+  <!-- Fecha ingreso fuera del formulario -->
+  <div>
+    <label for="fecha_ingreso">Fecha de ingreso:</label>
+    <input type="date" id="fecha_ingreso" readonly />
+  </div>
+
   <form id="formulario">
     <input type="number" id="n_anteojo" placeholder="N° de anteojo" readonly required />
+
     <select id="marca" required>
       <option value="">Seleccionar marca</option>
       <option value="RAY-BAN">RAY-BAN</option>
@@ -17,13 +25,14 @@
       <option value="NOON">NOON</option>
       <option value="OTRA">OTRA (nueva)</option>
     </select>
+
     <input type="text" id="nueva_marca" placeholder="Nueva marca" style="display:none;" />
 
     <input type="text" id="modelo" placeholder="Modelo" required />
-    <input type="text" id="codigo_color" placeholder="Código de color" required />
+    <input type="text" id="codigo_color" placeholder="Código de color (opcional)" />
     <input type="text" id="color_armazon" placeholder="Color de armazón" required />
     <input type="text" id="calibre" placeholder="Calibre (opcional)" />
-    <input type="text" id="color_cristal" placeholder="Color de cristal" />
+    <input type="text" id="color_cristal" placeholder="Color de cristal (solo para SOL)" />
 
     <select id="familia" required>
       <option value="">Seleccionar familia</option>
@@ -31,11 +40,9 @@
       <option value="RECETA">RECETA</option>
     </select>
 
-    <input type="text" id="precio_publico" placeholder="Precio público" required />
-    <input type="date" id="fecha_ingreso" readonly />
-    <input type="text" id="fecha_venta" placeholder="Fecha de venta" readonly />
-    <input type="text" id="vendedor" placeholder="Vendedor" readonly />
     <input type="number" id="costo" placeholder="Costo" required />
+    <input type="text" id="precio_publico" placeholder="Precio público" readonly />
+
     <input type="text" id="codigo_barras" placeholder="Código de barras (opcional)" />
     <textarea id="observaciones" placeholder="Observaciones (opcional)"></textarea>
 
