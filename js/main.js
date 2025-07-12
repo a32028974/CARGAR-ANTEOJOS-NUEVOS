@@ -7,6 +7,8 @@ let ultimaFamilia = '';
 document.addEventListener('DOMContentLoaded', () => {
   const hoy = new Date().toISOString().split('T')[0];
   document.getElementById('fecha_ingreso').value = hoy;
+  document.getElementById('fecha_ingreso_static').innerText = hoy;
+
 
   fetch(URL + '?todos=true')
     .then(res => res.json())
