@@ -1,29 +1,17 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <title>Registro de Anteojos</title>
-
-  <!-- estilos -->
   <link rel="stylesheet" href="estilos.css" />
-
-  <!-- script principal -->
-  <script src="js/main.js" defer></script>
+  <script src="main.js" defer></script>
 </head>
 <body>
-  <h2>Registro de Anteojos V11 </h2>
-
-  <!-- Fecha de ingreso (solo lectura, fuera del form para que nadie la toque) -->
-  <p>
-    <strong>Fecha de ingreso:</strong>
-    <span id="fecha_ingreso_static"></span>
-  </p>
-
+  <h2>Registro de Anteojos V12 </h2>
+  <p><strong>Fecha de ingreso:</strong> <span id="fecha_ingreso_static"></span></p>
   <form id="formulario">
-    <!-- N° de anteojo -->
     <input type="number" id="n_anteojo" placeholder="N° de anteojo" readonly required />
-
-    <!-- Marca -->
     <select id="marca" required>
       <option value="">Seleccionar marca</option>
       <option value="RAY-BAN">RAY-BAN</option>
@@ -32,30 +20,20 @@
       <option value="OTRA">OTRA (nueva)</option>
     </select>
     <input type="text" id="nueva_marca" placeholder="Nueva marca" style="display:none;" />
-
-    <!-- Resto de datos -->
-    <input type="text" id="modelo"        placeholder="Modelo"                 required />
-    <input type="text" id="codigo_color"  placeholder="Código de color (opcional)" />
-    <input type="text" id="color_armazon" placeholder="Color de armazón"       required />
-    <input type="text" id="calibre"       placeholder="Calibre (opcional)" />
+    <input type="text" id="modelo" placeholder="Modelo" required />
+    <input type="text" id="codigo_color" placeholder="Código de color (opcional)" />
+    <input type="text" id="color_armazon" placeholder="Color de armazón" required />
+    <input type="text" id="calibre" placeholder="Calibre (opcional)" />
     <input type="text" id="color_cristal" placeholder="Color de cristal (obligatorio solo en SOL)" />
-
-    <!-- Familia -->
     <select id="familia" required>
       <option value="">Seleccionar familia</option>
       <option value="SOL">SOL</option>
       <option value="RECETA">RECETA</option>
     </select>
-
-    <!-- Precios -->
-    <input type="number" id="costo"          placeholder="Costo"            required />
-    <input type="text"   id="precio_publico" placeholder="Precio público"   readonly />
-
-    <!-- Campos opcionales -->
-    <input  type="text"  id="codigo_barras" placeholder="Código de barras (opcional)" />
+    <input type="number" id="costo" placeholder="Costo" required />
+    <input type="text" id="precio_publico" placeholder="Precio público" readonly />
+    <input type="text" id="codigo_barras" placeholder="Código de barras (opcional)" />
     <textarea id="observaciones" placeholder="Observaciones (opcional)"></textarea>
-
-    <!-- Botón -->
     <button type="submit">Guardar</button>
   </form>
 </body>
