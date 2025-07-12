@@ -27,6 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (encontrado) {
         ultimoNumero = encontrado;
      } else {
+        console.log("DATA RECIBIDA:", data);
+
   const ultima = data[data.length - 1];
   ultimoNumero = parseInt(ultima[0]) + 1 || 1;
 }
