@@ -1,4 +1,4 @@
-const URL = 'https://script.google.com/macros/s/AKfycbzL2otft9aRvbSMiIgsG3xqpIUjemWKwnaT_DndllO6LJvs-zaxp7bz-NV-xtzkNyM26w/exec';
+const URL = 'https://script.google.com/macros/s/AKfycbyZpgCOy4VFFPE_gq_jpv9Ed5KsPjJqLAX-8SEohVRYl_qAm2PIpEtpAALLvRx9Bdt7Pg/exec';
 
 let ultimoNumero = 0;
 let ultimaMarca = '';
@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const hoy = new Date().toISOString().split('T')[0];
   document.getElementById('fecha_ingreso').value = hoy;
 
-  // Buscar el primer número vacío
   fetch(URL + '?todos=true')
     .then(res => res.json())
     .then(data => {
@@ -35,18 +34,15 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('n_anteojo').value = ultimoNumero;
     });
 
-  // Mostrar input para nueva marca
-  const marcaSelect = document.getElementById('marca');
-  marcaSelect.addEventListener('change', () => {
+  document.getElementById('marca').addEventListener('change', () => {
     const nuevaInput = document.getElementById('nueva_marca');
-    if (marcaSelect.value === 'OTRA') {
+    if (document.getElementById('marca').value === 'OTRA') {
       nuevaInput.style.display = 'block';
     } else {
       nuevaInput.style.display = 'none';
     }
   });
 
-  // Recalcular precio automáticamente
   document.getElementById('costo').addEventListener('input', calcularPrecio);
   document.getElementById('familia').addEventListener('change', calcularPrecio);
 });
@@ -94,43 +90,36 @@ document.getElementById('formulario').addEventListener('submit', async (e) => {
     color_cristal: colorCristal,
     familia,
     precio: document.getElementById('precio_publico').value,
+    costo: document.getElementById('costo').value,
     fecha_ingreso: document.getElementById('fecha_ingreso').value,
     fecha_venta: '',
     vendedor: '',
-    costo: document.getElementById('costo').value,
     codigo_barras: document.getElementById('codigo_barras').value.trim(),
     observaciones: document.getElementById('observaciones').value.trim(),
   };
 
-  try {
-    const response = await fetch(URL, {
-      method: 'POST',
-      body: JSON.stringify(datos),
-      headers: { 'Content-Type': 'application/json' }
-    });
+  // Convertir los datos a parámetros de URL
+  const params = new URLSearchParams(datos);
 
+  try {
+    const response = await fetch(`${URL}?${params.toString()}`);
     const result = await response.json();
 
     if (result.success) {
       alert('Guardado correctamente ✅');
 
-      // Guardar últimos valores
       ultimaMarca = marca;
       ultimaFamilia = familia;
 
-      // Limpiar todo
       document.getElementById('formulario').reset();
-
-      // Restaurar valores por defecto
       document.getElementById('n_anteojo').value = ++ultimoNumero;
       document.getElementById('marca').value = ultimaMarca;
       document.getElementById('familia').value = ultimaFamilia;
       document.getElementById('fecha_ingreso').value = new Date().toISOString().split('T')[0];
       document.getElementById('nueva_marca').style.display = 'none';
     } else {
-      alert('Error al guardar. Reintentá.');
+      alert('Error al guardar. Verificá los datos.');
     }
-
   } catch (err) {
     alert('Error de conexión. Reintentá.');
     console.error(err);
