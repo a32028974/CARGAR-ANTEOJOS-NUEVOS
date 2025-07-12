@@ -1,5 +1,5 @@
 /* URL de tu Apps Script */
-const URL = 'https://script.google.com/macros/s/AKfycbyZpgCOy4VFFPE_gq_jpv9Ed5KsPjJqLAX-8SEohVRYl_qAm2PIpEtpAALLvRx9Bdt7Pg/exec';
+const URL = 'https://script.google.com/macros/s/AKfycbyL_-fC6sKnjkUXr5ZLxd6gQNe_aJyXtvkpjvUPqBNw1l7w95DKg6Gko7-kTieNaguo4g/exec';
 
 let ultimoNumero = 0;
 let ultimaMarca = '';
