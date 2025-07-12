@@ -26,24 +26,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (encontrado) {
         ultimoNumero = encontrado;
-     } else {
-        console.log("DATA RECIBIDA:", data);
-
-  const ultima = data[data.length - 1];
-  ultimoNumero = parseInt(ultima[0]) + 1 || 1;
-}
-
+      } else {
+        if (Array.isArray(data) && data.length > 0) {
+          const ultima = data[data.length - 1];
+          if (ultima && ultima[0]) {
+            ultimoNumero = parseInt(ultima[0]) + 1 || 1;
+          } else {
+            ultimoNumero = 1;
+          }
+        } else {
+          console.warn("No se encontraron datos, se comienza en 1");
+          ultimoNumero = 1;
+        }
+      }
 
       document.getElementById('n_anteojo').value = ultimoNumero;
     });
 
   document.getElementById('marca').addEventListener('change', () => {
     const nuevaInput = document.getElementById('nueva_marca');
-    if (document.getElementById('marca').value === 'OTRA') {
-      nuevaInput.style.display = 'block';
-    } else {
-      nuevaInput.style.display = 'none';
-    }
+    nuevaInput.style.display = (document.getElementById('marca').value === 'OTRA') ? 'block' : 'none';
   });
 
   document.getElementById('costo').addEventListener('input', calcularPrecio);
@@ -95,17 +97,21 @@ document.getElementById('formulario').addEventListener('submit', async (e) => {
     precio: document.getElementById('precio_publico').value,
     costo: document.getElementById('costo').value,
     fecha_ingreso: document.getElementById('fecha_ingreso').value,
-    fecha_venta: '',
-    vendedor: '',
+    fecha_venta: '',      // queda vacío
+    vendedor: '',         // queda vacío
     codigo_barras: document.getElementById('codigo_barras').value.trim(),
     observaciones: document.getElementById('observaciones').value.trim(),
   };
 
-  // Convertir los datos a parámetros de URL
-  const params = new URLSearchParams(datos);
-
   try {
-    const response = await fetch(`${URL}?${params.toString()}`);
+    const response = await fetch(URL, {
+      method: 'POST',
+      body: JSON.stringify(datos),
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
     const result = await response.json();
 
     if (result.success) {
