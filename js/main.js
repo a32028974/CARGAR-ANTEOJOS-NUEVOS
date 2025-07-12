@@ -1,136 +1,136 @@
+/* URL de tu Apps Script */
 const URL = 'https://script.google.com/macros/s/AKfycbyZpgCOy4VFFPE_gq_jpv9Ed5KsPjJqLAX-8SEohVRYl_qAm2PIpEtpAALLvRx9Bdt7Pg/exec';
 
 let ultimoNumero = 0;
 let ultimaMarca = '';
 let ultimaFamilia = '';
 
+/* Al cargar la página ----------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', () => {
-  const hoy = new Date().toISOString().split('T')[0];
-  document.getElementById('fecha_ingreso').value = hoy;
+  /* 1. Fecha de ingreso estática ---------------------------- */
+  const hoyISO = new Date().toISOString().split('T')[0];
+  document.getElementById('fecha_ingreso_static').textContent = hoyISO;
 
-  fetch(URL + '?todos=true')
-    .then(res => res.json())
+  /* 2. Traer datos para calcular el número de anteojo ------- */
+  fetch(`${URL}?todos=true`)
+    .then(r => r.json())
     .then(data => {
-      let encontrado = null;
+      // Buscar la primera fila con número pero sin datos
+      let libre = null;
       for (let i = 1; i < data.length; i++) {
-        const fila = data[i];
-        const numero = fila[0];
-        const marca = fila[1];
-        const modelo = fila[2];
-        const color = fila[3];
-        if (numero && !marca && !modelo && !color) {
-          encontrado = parseInt(numero);
+        const [num, marca, modelo, color] = data[i];
+        if (num && !marca && !modelo && !color) {
+          libre = parseInt(num);
           break;
         }
       }
 
-      if (encontrado) {
-        ultimoNumero = encontrado;
+      if (libre) {
+        ultimoNumero = libre;
+      } else if (data.length) {
+        const ultima = data[data.length - 1];
+        ultimoNumero = parseInt(ultima[0]) + 1 || 1;
       } else {
-        if (Array.isArray(data) && data.length > 0) {
-          const ultima = data[data.length - 1];
-          if (ultima && ultima[0]) {
-            ultimoNumero = parseInt(ultima[0]) + 1 || 1;
-          } else {
-            ultimoNumero = 1;
-          }
-        } else {
-          console.warn("No se encontraron datos, se comienza en 1");
-          ultimoNumero = 1;
-        }
+        ultimoNumero = 1;
       }
-
+      document.getElementById('n_anteojo').value = ultimoNumero;
+    })
+    .catch(err => {
+      console.error('Error cargando datos:', err);
+      ultimoNumero = 1;
       document.getElementById('n_anteojo').value = ultimoNumero;
     });
 
-  document.getElementById('marca').addEventListener('change', () => {
-    const nuevaInput = document.getElementById('nueva_marca');
-    nuevaInput.style.display = (document.getElementById('marca').value === 'OTRA') ? 'block' : 'none';
+  /* 3. Mostrar input de nueva marca -------------------------- */
+  document.getElementById('marca').addEventListener('change', e => {
+    document.getElementById('nueva_marca').style.display =
+      e.target.value === 'OTRA' ? 'block' : 'none';
   });
 
-  document.getElementById('costo').addEventListener('input', calcularPrecio);
-  document.getElementById('familia').addEventListener('change', calcularPrecio);
+  /* 4. Recalcular precio ------------------------------------ */
+  document.getElementById('costo'  ).addEventListener('input',  calcPrecio);
+  document.getElementById('familia').addEventListener('change', calcPrecio);
 });
 
-function calcularPrecio() {
-  const costo = parseFloat(document.getElementById('costo').value);
+/* Cálculo automático de precio */
+function calcPrecio() {
+  const costo   = parseFloat(document.getElementById('costo').value);
   const familia = document.getElementById('familia').value;
   let precio = 0;
 
   if (!isNaN(costo)) {
-    if (familia === 'RECETA') {
-      precio = costo * 3.63;
-    } else if (familia === 'SOL') {
-      precio = costo * 2.42;
-    }
+    precio = familia === 'RECETA' ? costo * 3.63
+           : familia === 'SOL'    ? costo * 2.42
+           : costo;
   }
-
   document.getElementById('precio_publico').value = precio.toFixed(2);
 }
 
-document.getElementById('formulario').addEventListener('submit', async (e) => {
-  e.preventDefault();
+/* Envío del formulario ---------------------------------------------------- */
+document.getElementById('formulario').addEventListener('submit', async ev => {
+  ev.preventDefault();
 
-  const familia = document.getElementById('familia').value;
+  /* Validación de color de cristal en SOL */
+  const familia      = document.getElementById('familia').value;
   const colorCristal = document.getElementById('color_cristal').value.trim();
-
-  if (familia === 'SOL' && colorCristal === '') {
+  if (familia === 'SOL' && !colorCristal) {
     alert('Debe ingresar el color de cristal para anteojos de SOL.');
     return;
   }
 
+  /* Marca (puede ser nueva) */
   let marca = document.getElementById('marca').value;
   const nuevaMarca = document.getElementById('nueva_marca').value.trim();
-  if (marca === 'OTRA' && nuevaMarca) {
-    marca = nuevaMarca;
-  }
+  if (marca === 'OTRA' && nuevaMarca) marca = nuevaMarca;
 
+  /* Datos a enviar */
   const datos = {
-    n_anteojo: document.getElementById('n_anteojo').value,
+    n_anteojo:  document.getElementById('n_anteojo').value,
     marca,
-    modelo: document.getElementById('modelo').value.trim(),
-    codigo_color: document.getElementById('codigo_color').value.trim(),
+    modelo:        document.getElementById('modelo').value.trim(),
+    codigo_color:  document.getElementById('codigo_color').value.trim(),
     color_armazon: document.getElementById('color_armazon').value.trim(),
-    calibre: document.getElementById('calibre').value.trim(),
+    calibre:       document.getElementById('calibre').value.trim(),
     color_cristal: colorCristal,
     familia,
-    precio: document.getElementById('precio_publico').value,
-    costo: document.getElementById('costo').value,
-    fecha_ingreso: document.getElementById('fecha_ingreso').value,
-    fecha_venta: '',      // queda vacío
-    vendedor: '',         // queda vacío
+    precio:        document.getElementById('precio_publico').value,
+    costo:         document.getElementById('costo').value,
+    fecha_ingreso: document.getElementById('fecha_ingreso_static').textContent,
+    fecha_venta:   '',   // ocultos
+    vendedor:      '',   // ocultos
     codigo_barras: document.getElementById('codigo_barras').value.trim(),
-    observaciones: document.getElementById('observaciones').value.trim(),
+    observaciones: document.getElementById('observaciones').value.trim()
   };
 
   try {
-    const response = await fetch(URL, {
-      method: 'POST',
-      body: JSON.stringify(datos),
-      headers: {
-        'Content-Type': 'application/json',
-      }
+    /* Enviamos por POST (Apps Script ya permite POST) */
+    const res = await fetch(URL, {
+      method : 'POST',
+      body   : JSON.stringify(datos),
+      headers: { 'Content-Type': 'application/json' }
     });
+    const json = await res.json();
 
-    const result = await response.json();
-
-    if (result.success) {
+    if (json.success) {
       alert('Guardado correctamente ✅');
 
-      ultimaMarca = marca;
+      /* Limpiar y preparar para el siguiente */
+      ultimaMarca   = marca;
       ultimaFamilia = familia;
-
       document.getElementById('formulario').reset();
+
       document.getElementById('n_anteojo').value = ++ultimoNumero;
-      document.getElementById('marca').value = ultimaMarca;
+      document.getElementById('marca').value   = ultimaMarca;
       document.getElementById('familia').value = ultimaFamilia;
-      document.getElementById('fecha_ingreso').value = new Date().toISOString().split('T')[0];
+      document.getElementById('fecha_ingreso_static').textContent =
+        new Date().toISOString().split('T')[0];
       document.getElementById('nueva_marca').style.display = 'none';
+      calcPrecio();
     } else {
-      alert('Error al guardar. Verificá los datos.');
+      alert('El servidor respondió error. Verifique los datos.');
     }
   } catch (err) {
-    alert('Error de conexión. Reintentá.');
     console.error(err);
+    alert('Error de conexión. Intente de nuevo.');
   }
 });
